@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="stylesheet" href="industry/styles.css">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&display=swap">
+<style>
+html,body{margin:0;padding:0;background:var(--color-bg);color:var(--color-text);font-family:var(--font-body);text-wrap:pretty;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:var(--color-accent-700);text-decoration:none}
+a:hover{color:var(--color-accent)}
+</style>
+</helmet>
+<div style="min-height:100vh;background:var(--color-bg)">
+
+<nav class="nav" style="display:flex;align-items:center;gap:24px;padding:14px clamp(20px,5vw,72px);border-bottom:1px solid var(--color-divider)">
+<span style="display:flex;align-items:baseline;gap:9px;margin-right:auto">
+<span style="font-family:var(--font-heading);font-weight:700;font-size:21px;letter-spacing:.06em;text-transform:uppercase">Dope</span>
+<span style="font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--color-neutral-600)">physics engine</span>
+</span>
+<a href="#model" style="font-size:14px;color:var(--color-text)">Model</a>
+<a href="#solved" style="font-size:14px;color:var(--color-text)">Solved</a>
+<a href="#limits" style="font-size:14px;color:var(--color-text)">Limits</a>
+<a class="btn btn-primary" href="Ballistic Solver.dc.html" style="border-radius:0;font-family:var(--font-heading);font-weight:600;font-size:13px;letter-spacing:.12em;text-transform:uppercase;padding:8px 18px;color:var(--color-bg)">Open the solver</a>
+</nav>
+
+<div style="max-width:1200px;margin:0 auto;padding:0 clamp(20px,5vw,72px)">
+
+<section style="padding:96px 0 72px">
+<h1 style="font-family:var(--font-heading);font-weight:600;font-size:clamp(48px,7vw,96px);line-height:1.04;letter-spacing:.01em;text-transform:uppercase;margin:0 0 0 -.052em">
+<span style="display:block">A ballistic solver</span>
+<span style="display:block">that shows its work.</span>
+</h1>
+<p style="font-size:16px;line-height:24px;max-width:60ch;margin:34px 0 0;color:var(--color-text)">Dope integrates a point-mass trajectory against the G7 and G1 standard drag functions and prints the equation behind every number it gives you — drop, drift, spin, Coriolis, energy. Every term is named, every approximation is labelled, and nothing is hidden behind a dial.</p>
+<div style="display:flex;gap:11px;flex-wrap:wrap;margin-top:24px">
+<a class="btn btn-primary" href="Ballistic Solver.dc.html" style="border-radius:0;font-family:var(--font-heading);font-weight:600;font-size:14px;letter-spacing:.12em;text-transform:uppercase;padding:10px 22px;color:var(--color-bg)">Open the solver</a>
+<a class="btn btn-ghost" href="#limits" style="border-radius:0;font-family:var(--font-heading);font-weight:600;font-size:14px;letter-spacing:.12em;text-transform:uppercase;padding:10px 12px">Read the limits first</a>
+</div>
+</section>
+
+<section id="model" style="padding:0 0 60px">
+<div class="blueprint" style="position:relative;border:1px solid var(--color-divider);border-radius:0">
+<i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+<header style="display:flex;flex-wrap:wrap;align-items:stretch;border-bottom:1px solid var(--color-divider)">
+<span style="flex:1;min-width:16ch;padding:12px 24px;font-size:13px;line-height:24px;letter-spacing:.08em;text-transform:uppercase;font-weight:600">Dope — model of record</span>
+<span style="border-left:1px solid var(--color-divider);white-space:nowrap;padding:12px 24px;font-size:13px;line-height:24px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;color:rgba(29,31,32,.7)">Point mass</span>
+<span style="border-left:1px solid var(--color-divider);white-space:nowrap;padding:12px 24px;font-size:13px;line-height:24px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;color:rgba(29,31,32,.7)">Rev A</span>
+<span style="border-left:1px solid var(--color-divider);white-space:nowrap;padding:12px 24px;font-size:13px;line-height:24px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;color:rgba(29,31,32,.7)">Sheet 01 of 02</span>
+</header>
+<table class="table" style="table-layout:fixed">
+<thead><tr>
+<th scope="col" style="width:72px;padding:12px 24px 12px 24px;font-size:13px;line-height:12px;font-weight:600;color:rgba(29,31,32,.7)">No.</th>
+<th scope="col" style="width:30%;padding:12px 24px 12px 0;font-size:13px;line-height:12px;font-weight:600;color:rgba(29,31,32,.7)">Component</th>
+<th scope="col" style="width:23%;padding:12px 24px 12px 0;font-size:13px;line-height:12px;font-weight:600;color:rgba(29,31,32,.7)">Method</th>
+<th scope="col" style="padding:12px 24px 12px 0;font-size:13px;line-height:12px;font-weight:600;color:rgba(29,31,32,.7)">Note</th>
+</tr></thead>
+<tbody>
+<sc-for list="{{ modelRows }}" as="r" hint-placeholder-count="7">
+<tr>
+<td style="padding:12px 24px;vertical-align:middle;font-size:13px;font-weight:600;letter-spacing:.08em;color:var(--color-accent-700)">{{ r.n }}</td>
+<td style="padding:12px 24px 12px 0;vertical-align:middle;font-size:15px;line-height:24px">{{ r.prop }}</td>
+<td style="padding:12px 24px 12px 0;vertical-align:middle;font-family:var(--font-heading);font-weight:600;font-size:22px;line-height:24px;letter-spacing:.02em">{{ r.val }}</td>
+<td style="padding:12px 24px 12px 0;vertical-align:middle;font-size:15px;line-height:24px;color:rgba(29,31,32,.78)">{{ r.rem }}</td>
+</tr>
+</sc-for>
+</tbody>
+</table>
+<p style="margin:0;padding:12px 24px;border-top:1px solid var(--color-divider);font-size:13px;line-height:24px;color:rgba(29,31,32,.7)">A point-mass model. It does not compute yaw, precession or nutation; the rotational effects below are empirical fits laid over the translational solution.</p>
+</div>
+</section>
+
+<section id="solved" style="padding:24px 0 60px">
+<span style="display:block;font-size:13px;line-height:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;color:var(--color-accent-700);margin:0 0 12px">02 · Solved from first principles</span>
+<hr style="height:1px;border:0;margin:0 0 32px;background:var(--color-divider)">
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:clamp(20px,3vw,48px)">
+<sc-for list="{{ cells }}" as="c" hint-placeholder-count="3">
+<div class="blueprint" style="position:relative;border:1px solid var(--color-divider);border-radius:0;padding:24px">
+<i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+<h2 style="font-family:var(--font-heading);font-weight:600;font-size:22px;line-height:24px;letter-spacing:.02em;text-transform:uppercase;margin:0">{{ c.title }}</h2>
+<div style="font-family:ui-monospace,Menlo,monospace;font-size:12.5px;line-height:1.6;color:var(--color-accent-700);margin:14px 0 0">{{ c.eq }}</div>
+<p style="font-size:15px;line-height:24px;margin:14px 0 0;color:rgba(29,31,32,.78)">{{ c.body }}</p>
+</div>
+</sc-for>
+</div>
+</section>
+
+<section id="limits" style="padding:24px 0 60px">
+<span style="display:block;font-size:13px;line-height:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;color:var(--color-accent-700);margin:0 0 12px">03 · Where the model stops</span>
+<hr style="height:1px;border:0;margin:0 0 32px;background:var(--color-divider)">
+<div style="display:flex;flex-direction:column;gap:44px">
+<div class="blueprint" style="position:relative;border:1px solid var(--color-divider);border-radius:0">
+<i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+<header style="display:flex;flex-wrap:wrap;align-items:stretch;border-bottom:1px solid var(--color-divider)">
+<span style="flex:1;min-width:16ch;padding:12px 24px;font-size:13px;line-height:24px;letter-spacing:.08em;text-transform:uppercase;font-weight:600">Approximations in force</span>
+<span style="border-left:1px solid var(--color-divider);white-space:nowrap;padding:12px 24px;font-size:13px;line-height:24px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;color:rgba(29,31,32,.7)">Sheet 02 of 02</span>
+</header>
+<table class="table" style="table-layout:fixed">
+<thead><tr>
+<th scope="col" style="width:24%;padding:12px 24px;font-size:13px;line-height:12px;font-weight:600;color:rgba(29,31,32,.7)">Effect</th>
+<th scope="col" style="padding:12px 24px 12px 0;font-size:13px;line-height:12px;font-weight:600;color:rgba(29,31,32,.7)">How it is handled</th>
+<th scope="col" style="width:16%;padding:12px 24px 12px 0;font-size:13px;line-height:12px;font-weight:600;color:rgba(29,31,32,.7)">Trust it to</th>
+</tr></thead>
+<tbody>
+<sc-for list="{{ limitRows }}" as="r" hint-placeholder-count="6">
+<tr>
+<td style="padding:12px 24px;vertical-align:top;font-size:15px;line-height:24px">{{ r.eff }}</td>
+<td style="padding:12px 24px 12px 0;vertical-align:top;font-size:15px;line-height:24px;color:rgba(29,31,32,.78)">{{ r.how }}</td>
+<td style="padding:12px 24px 12px 0;vertical-align:top;font-family:ui-monospace,Menlo,monospace;font-size:12.5px;line-height:24px;color:var(--color-accent-700)">{{ r.trust }}</td>
+</tr>
+</sc-for>
+</tbody>
+</table>
+</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px clamp(24px,5vw,72px)">
+<div>
+<h3 style="font-family:var(--font-heading);font-weight:600;font-size:26px;line-height:30px;letter-spacing:.02em;text-transform:uppercase;margin:0">A solver is not a substitute for a chronograph</h3>
+<p style="font-size:15px;line-height:24px;margin:16px 0 0;color:rgba(29,31,32,.78)">Every number here inherits the error in what you typed. A muzzle velocity guessed from a box label is worth more error at 1,000 yards than every rotational effect on the sheet combined. Dope reports velocity standard deviation as vertical spread for exactly that reason.</p>
+</div>
+<div>
+<h3 style="font-family:var(--font-heading);font-weight:600;font-size:26px;line-height:30px;letter-spacing:.02em;text-transform:uppercase;margin:0">Truing is on you</h3>
+<p style="font-size:15px;line-height:24px;margin:16px 0 0;color:rgba(29,31,32,.78)">The published ballistic coefficient of a bullet is a single number standing in for a curve. Shoot the gun, compare the drop, adjust the coefficient until the sheet matches the target. The solver gives you the model; the range gives you the truth.</p>
+</div>
+</div>
+</div>
+</section>
+
+<section style="padding:24px 0 40px">
+<span style="display:block;font-size:13px;line-height:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;color:var(--color-accent-700);margin:0 0 12px">04 · Open it</span>
+<hr style="height:1px;border:0;margin:0 0 24px;background:var(--color-divider)">
+<h3 style="font-family:var(--font-heading);font-weight:600;font-size:26px;line-height:24px;letter-spacing:.02em;text-transform:uppercase;margin:0">Five views over one solution</h3>
+<p style="font-size:15px;line-height:24px;margin:18px 0 0;max-width:60ch;color:rgba(29,31,32,.78)">Side elevation against the line of sight, plan view separating wind from spin and Coriolis, a self-scaling reticle with the hold marked, velocity and energy decay through the transonic band, and a range card. Every slider re-solves; the fire control flies the shot.</p>
+<div style="display:flex;gap:11px;flex-wrap:wrap;margin-top:24px">
+<a class="btn btn-primary" href="Ballistic Solver.dc.html" style="border-radius:0;font-family:var(--font-heading);font-weight:600;font-size:14px;letter-spacing:.12em;text-transform:uppercase;padding:10px 22px;color:var(--color-bg)">Open the solver</a>
+</div>
+</section>
+
+<footer style="padding:40px 0;border-top:1px solid rgba(29,31,32,.1);font-size:13px;line-height:24px;color:rgba(29,31,32,.7)">Dope Physics Engine · point-mass exterior ballistics · figures are model output, not range data.</footer>
+
+</div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:900}}">
+class Component extends DCLogic {
+  renderVals(){
+    return {
+      modelRows:[
+        {n:"01", prop:"Integrator", val:"Runge–Kutta 4", rem:"Fixed 2 ms step, in a frame aligned with the line of sight"},
+        {n:"02", prop:"Drag function", val:"G7 / G1", rem:"Standard tables, 45 points, interpolated on Mach number"},
+        {n:"03", prop:"Air density", val:"Humid air", rem:"Station pressure from sea-level baro and altitude; vapour pressure removed"},
+        {n:"04", prop:"Zero solution", val:"Bisection", rem:"28 iterations on launch angle against the sight-height offset"},
+        {n:"05", prop:"Coriolis", val:"−2 Ω × v", rem:"Integrated inside the loop from latitude and azimuth, not added after"},
+        {n:"06", prop:"Stability", val:"Miller", rem:"Velocity-corrected gyroscopic stability factor from twist, length and mass"},
+        {n:"07", prop:"Wind", val:"Three zones", rem:"Speed and clock direction resolved per third of the flight path"}
+      ],
+      cells:[
+        {title:"Drag and velocity decay",
+         eq:"a = k · ρ · Cd(M) · v² / BC",
+         body:"Retardation is recomputed at every step from the instantaneous Mach number, so the drag curve through the transonic band is the table's, not a straight line. Velocity, energy and time of flight all fall out of the same integration."},
+        {title:"Atmosphere",
+         eq:"ρ = (P−Pv)/(Rd·T) + Pv/(Rv·T)",
+         body:"Temperature, humidity, barometric pressure and altitude produce one density and one speed of sound. Both feed the drag term — cold dense air raises the Mach number and the drag with it, which is why a summer zero misses in November."},
+        {title:"Shot geometry",
+         eq:"θ = arctan(offset / range)",
+         body:"The trajectory is integrated along the sight line, so range is slant range and drop is measured perpendicular to it. Look angle rotates gravity into that frame rather than scaling the answer by a cosine."}
+      ],
+      limitRows:[
+        {eff:"Spin drift", how:"Litz empirical fit on stability factor and time of flight, right-hand twist assumed", trust:"± 15 %"},
+        {eff:"Aerodynamic jump", how:"Linear approximation from stability factor and crosswind component", trust:"± 25 %"},
+        {eff:"Ballistic coefficient", how:"Single constant across the whole velocity band", trust:"true it yourself"},
+        {eff:"Yaw of repose, precession", how:"Not modelled — a point mass has no rotational state", trust:"n/a"},
+        {eff:"Vertical Coriolis (Eötvös)", how:"Solved, but sensitive to azimuth you may not know precisely", trust:"± 0.1 mil"},
+        {eff:"Transonic instability", how:"Drag is table-accurate; bullet behaviour through Mach 1 is not", trust:"treat as advisory"},
+        {eff:"Speed of sound", how:"Dry-air relation; humidity's small effect on c is ignored", trust:"± 0.3 %"}
+      ]
+    };
+  }
+}
+
+</script>
+</body>
+</html>

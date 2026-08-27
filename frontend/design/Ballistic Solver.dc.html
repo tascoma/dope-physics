@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="stylesheet" href="industry/styles.css">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&display=swap">
+<style>
+html,body{margin:0;padding:0;background:var(--color-bg);color:var(--color-text);font-family:var(--font-body);-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+input[type=range]{-webkit-appearance:none;appearance:none;background:transparent;cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:2px;background:var(--color-neutral-300)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;height:11px;background:var(--color-accent);margin-top:-4.5px;border-radius:0}
+input[type=range]:hover::-webkit-slider-thumb{background:var(--color-accent-700)}
+input[type=range]:focus-visible{outline:2px solid var(--color-accent);outline-offset:3px}
+@keyframes bsPulse{0%{opacity:1}50%{opacity:.35}100%{opacity:1}}
+</style>
+</helmet>
+<div style="display:grid;grid-template-rows:auto 1fr;height:100vh;overflow:hidden;background:var(--color-bg)">
+
+<header style="display:flex;align-items:center;gap:20px;padding:11px 20px;border-bottom:1px solid var(--color-divider);background:var(--color-bg)">
+<div style="display:flex;align-items:baseline;gap:10px">
+<a href="Landing.dc.html" style="font-family:var(--font-heading);font-weight:700;font-size:20px;letter-spacing:.06em;text-transform:uppercase;color:var(--color-text);text-decoration:none">Dope</a>
+<span style="font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--color-neutral-600)">physics engine</span>
+</div>
+<div style="display:flex;align-items:center;gap:7px;margin-left:auto">
+<span style="font-family:ui-monospace,Menlo,monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--color-neutral-600)">drag model</span>
+<div class="seg" style="border-radius:0">
+<label class="seg-opt" style="border-radius:0"><input type="radio" name="bs-model" checked="{{ isG7 }}" onChange="{{ setG7 }}" style="position:absolute;opacity:0;width:0"><span>G7</span></label>
+<label class="seg-opt" style="border-radius:0"><input type="radio" name="bs-model" checked="{{ isG1 }}" onChange="{{ setG1 }}" style="position:absolute;opacity:0;width:0"><span>G1</span></label>
+</div>
+</div>
+<div style="display:flex;align-items:center;gap:7px">
+<span style="font-family:ui-monospace,Menlo,monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--color-neutral-600)">units</span>
+<div class="seg" style="border-radius:0">
+<label class="seg-opt" style="border-radius:0"><input type="radio" name="bs-units" checked="{{ isImp }}" onChange="{{ setImp }}" style="position:absolute;opacity:0;width:0"><span>yd / MOA</span></label>
+<label class="seg-opt" style="border-radius:0"><input type="radio" name="bs-units" checked="{{ isMet }}" onChange="{{ setMet }}" style="position:absolute;opacity:0;width:0"><span>m / mil</span></label>
+</div>
+</div>
+</header>
+
+<div style="display:grid;grid-template-columns:288px minmax(0,1fr) 296px;min-height:0;background:var(--color-bg)">
+
+<aside style="border-right:1px solid var(--color-divider);overflow-y:auto;padding:16px 16px 28px;background:var(--color-bg);position:relative;z-index:2">
+<div style="font-family:ui-monospace,Menlo,monospace;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--color-accent);margin-bottom:9px">01 — Projectile</div>
+<select class="input" onChange="{{ setCart }}" style="border-radius:0;font-family:var(--font-heading);font-size:15px;letter-spacing:.02em;margin-bottom:4px">
+<sc-for list="{{ cartList }}" as="c" hint-placeholder-count="6">
+<option value="{{ c.i }}" selected="{{ c.sel }}">{{ c.name }}</option>
+</sc-for>
+</select>
+<div style="display:flex;gap:6px;flex-wrap:wrap;margin:8px 0 6px">
+<span class="tag tag-outline" style="border-radius:0;font-family:ui-monospace,Menlo,monospace;font-size:10px">{{ calLabel }}</span>
+<span class="tag tag-neutral" style="border-radius:0;font-family:ui-monospace,Menlo,monospace;font-size:10px">{{ lenLabel }}</span>
+<span class="tag tag-neutral" style="border-radius:0;font-family:ui-monospace,Menlo,monospace;font-size:10px">{{ sgLabel }}</span>
+</div>
+<sc-for list="{{ ctlProj }}" as="c" hint-placeholder-count="4">
+<div style="display:grid;grid-template-columns:1fr auto;gap:1px 8px;align-items:baseline;padding:6px 0">
+<span style="font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--color-neutral-700)">{{ c.label }}</span>
+<span style="font-family:ui-monospace,Menlo,monospace;font-size:12px">{{ c.display }}</span>
+<input type="range" min="{{ c.min }}" max="{{ c.max }}" step="{{ c.step }}" value="{{ c.value }}" onInput="{{ c.onInput }}" style="grid-column:1/-1;width:100%;height:11px;margin:3px 0 0">
+</div>
+</sc-for>
+
+<div style="font-family:ui-monospace,Menlo,monospace;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--color-accent);margin:20px 0 3px">02 — Rifle &amp; zero</div>
+<sc-for list="{{ ctlRifle }}" as="c" hint-placeholder-count="3">
+<div style="display:grid;grid-template-columns:1fr auto;gap:1px 8px;align-items:baseline;padding:6px 0">
+<span style="font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--color-neutral-700)">{{ c.label }}</span>
+<span style="font-family:ui-monospace,Menlo,monospace;font-size:12px">{{ c.display }}</span>
+<input type="range" min="{{ c.min }}" max="{{ c.max }}" step="{{ c.step }}" value="{{ c.value }}" onInput="{{ c.onInput }}" style="grid-column:1/-1;width:100%;height:11px;margin:3px 0 0">
+</div>
+</sc-for>
+
+<div style="font-family:ui-monospace,Menlo,monospace;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--color-accent);margin:20px 0 3px">03 — Atmosphere</div>
+<sc-for list="{{ ctlAtmo }}" as="c" hint-placeholder-count="4">
+<div style="display:grid;grid-template-columns:1fr auto;gap:1px 8px;align-items:baseline;padding:6px 0">
+<span style="font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--color-neutral-700)">{{ c.label }}</span>
+<span style="font-family:ui-monospace,Menlo,monospace;font-size:12px">{{ c.display }}</span>
+<input type="range" min="{{ c.min }}" max="{{ c.max }}" step="{{ c.step }}" value="{{ c.value }}" onInput="{{ c.onInput }}" style="grid-column:1/-1;width:100%;height:11px;margin:3px 0 0">
+</div>
+</sc-for>
+<div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:8px;padding-top:8px;border-top:1px solid rgba(29,31,32,.1)">
+<span style="font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--color-neutral-700)">air density</span>
+<span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--color-accent-700)">{{ rhoLabel }}</span>
+</div>
+<div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:3px">
+<span style="font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--color-neutral-700)">speed of sound</span>
+<span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--color-accent-700)">{{ machLabel }}</span>
+</div>
+
+<div style="display:flex;align-items:center;justify-content:space-between;margin:20px 0 3px">
+<span style="font-family:ui-monospace,Menlo,monospace;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--color-accent)">04 — Wind</span>
+<button class="btn btn-ghost" onClick="{{ toggleZones }}" style="border-radius:0;font-size:10px;letter-spacing:.08em;text-transform:uppercase;padding:2px 5px">{{ zoneBtn }}</button>
+</div>
+<sc-for list="{{ windRows }}" as="w" hint-placeholder-count="1">
+<div style="border:1px solid var(--color-divider);padding:8px 9px 9px;margin-bottom:7px">
+<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
+<span style="font-family:ui-monospace,Menlo,monospace;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-neutral-600)">{{ w.zone }}</span>
+<span style="font-family:ui-monospace,Menlo,monospace;font-size:12px">{{ w.readout }}</span>
+</div>
+<input type="range" min="0" max="30" step="0.5" value="{{ w.speed }}" onInput="{{ w.onSpeed }}" style="width:100%;height:11px;margin:0 0 6px">
+<div style="display:flex;align-items:center;gap:9px">
+<svg viewBox="0 0 44 44" style="width:42px;height:42px;flex:none;overflow:visible">
+<circle cx="22" cy="22" r="20" fill="none" stroke="rgba(29,31,32,.2)"></circle>
+<line x1="22" y1="2" x2="22" y2="7" stroke="rgba(29,31,32,.35)"></line>
+<line x1="22" y1="37" x2="22" y2="42" stroke="rgba(29,31,32,.35)"></line>
+<line x1="2" y1="22" x2="7" y2="22" stroke="rgba(29,31,32,.35)"></line>
+<line x1="37" y1="22" x2="42" y2="22" stroke="rgba(29,31,32,.35)"></line>
+<line x1="22" y1="22" x2="{{ w.ax }}" y2="{{ w.ay }}" stroke="#5980a6" stroke-width="1.5"></line>
+<circle cx="{{ w.ax }}" cy="{{ w.ay }}" r="2.4" fill="#5980a6"></circle>
+</svg>
+<div style="flex:1">
+<span style="font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--color-neutral-700)">from {{ w.clockLabel }}</span>
+<input type="range" min="0" max="11.5" step="0.5" value="{{ w.clock }}" onInput="{{ w.onClock }}" style="width:100%;height:11px;margin:3px 0 0">
+</div>
+</div>
+</div>
+</sc-for>
+
+<div style="font-family:ui-monospace,Menlo,monospace;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--color-accent);margin:20px 0 3px">05 — Shot geometry</div>
+<sc-for list="{{ ctlShot }}" as="c" hint-placeholder-count="5">
+<div style="display:grid;grid-template-columns:1fr auto;gap:1px 8px;align-items:baseline;padding:6px 0">
+<span style="font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--color-neutral-700)">{{ c.label }}</span>
+<span style="font-family:ui-monospace,Menlo,monospace;font-size:12px">{{ c.display }}</span>
+<input type="range" min="{{ c.min }}" max="{{ c.max }}" step="{{ c.step }}" value="{{ c.value }}" onInput="{{ c.onInput }}" style="grid-column:1/-1;width:100%;height:11px;margin:3px 0 0">
+</div>
+</sc-for>
+</aside>
+
+<main style="display:grid;grid-template-rows:auto minmax(0,1fr);min-width:0;min-height:0">
+<div style="display:flex;align-items:center;gap:2px;padding:10px 18px 0;border-bottom:1px solid var(--color-divider);flex-wrap:wrap">
+<sc-for list="{{ tabs }}" as="t" hint-placeholder-count="5">
+<button onClick="{{ t.go }}" style="border:1px solid var(--color-divider);border-bottom:none;border-radius:0;background:{{ t.bg }};color:{{ t.fg }};font-family:var(--font-heading);font-weight:600;font-size:13px;letter-spacing:.08em;text-transform:uppercase;padding:7px 14px;margin-bottom:-1px;cursor:pointer">{{ t.label }}</button>
+</sc-for>
+<div style="margin-left:auto;display:flex;align-items:center;gap:10px;padding-bottom:8px" data-tabs-actions="1">
+<span style="font-family:ui-monospace,Menlo,monospace;font-size:10px;color:var(--color-neutral-600);white-space:nowrap">{{ flightLabel }}</span>
+<button class="btn btn-primary" onClick="{{ fire }}" style="border-radius:0;font-family:var(--font-heading);font-weight:700;font-size:13.5px;letter-spacing:.14em;text-transform:uppercase;padding:8px 20px">Fire</button>
+</div>
+</div>
+
+<div style="min-height:0;overflow:auto;padding:16px 18px 22px">
+
+<sc-if value="{{ isSide }}" hint-placeholder-val="{{ true }}">
+<div class="blueprint" style="border-radius:0;padding:12px 14px 6px;background:var(--color-neutral-100)">
+<i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
+<span style="font-family:var(--font-heading);font-weight:600;font-size:15px;letter-spacing:.1em;text-transform:uppercase">Side elevation — path vs line of sight</span>
+<span style="font-family:ui-monospace,Menlo,monospace;font-size:10px;color:var(--color-neutral-600)">vertical exaggerated · {{ dropUnit }}</span>
+</div>
+<svg viewBox="0 0 1000 430" style="width:100%;height:auto;display:block;font-family:ui-monospace,Menlo,monospace">
+<sc-for list="{{ gx }}" as="g" hint-placeholder-count="6">
+<line x1="{{ g.x }}" y1="30" x2="{{ g.x }}" y2="368" stroke="rgba(29,31,32,.07)"></line>
+<text x="{{ g.x }}" y="386" font-size="10.5" fill="#7a7a7d" text-anchor="middle">{{ g.label }}</text>
+</sc-for>
+<sc-for list="{{ gySide }}" as="g" hint-placeholder-count="5">
+<line x1="72" y1="{{ g.y }}" x2="978" y2="{{ g.y }}" stroke="rgba(29,31,32,.07)"></line>
+<text x="64" y="{{ g.y }}" font-size="10.5" fill="#7a7a7d" text-anchor="end" dominant-baseline="middle">{{ g.label }}</text>
+</sc-for>
+<line x1="72" y1="{{ losY }}" x2="978" y2="{{ losY }}" stroke="#1d1f20" stroke-width="1" stroke-dasharray="7 4"></line>
+<text x="978" y="{{ losYt }}" font-size="10.5" fill="#1d1f20" text-anchor="end">LINE OF SIGHT</text>
+<path d="{{ borePath }}" fill="none" stroke="rgba(89,128,166,.45)" stroke-width="1" stroke-dasharray="3 3"></path>
+<path d="{{ sidePath }}" fill="none" stroke="#5980a6" stroke-width="2"></path>
+<sc-for list="{{ sideMarks }}" as="m" hint-placeholder-count="0">
+<line x1="{{ m.x }}" y1="{{ m.y }}" x2="{{ m.x }}" y2="368" stroke="rgba(89,128,166,.35)" stroke-dasharray="2 3"></line>
+<circle cx="{{ m.x }}" cy="{{ m.y }}" r="2.6" fill="#416180"></circle>
+<text x="{{ m.x }}" y="{{ m.ly }}" font-size="10" fill="#416180" text-anchor="middle">{{ m.label }}</text>
+</sc-for>
+<sc-if value="{{ hasBullet }}" hint-placeholder-val="{{ false }}">
+<circle cx="{{ bx }}" cy="{{ bySide }}" r="5" fill="#5980a6" opacity=".25"></circle>
+<circle cx="{{ bx }}" cy="{{ bySide }}" r="2.6" fill="#1d1f20"></circle>
+</sc-if>
+<line x1="72" y1="368" x2="978" y2="368" stroke="rgba(29,31,32,.4)"></line>
+<line x1="72" y1="30" x2="72" y2="368" stroke="rgba(29,31,32,.4)"></line>
+<text x="525" y="416" font-size="10.5" fill="#7a7a7d" text-anchor="middle" letter-spacing="1.4">RANGE — {{ rangeUnit }}</text>
+</svg>
+</div>
+</sc-if>
+
+<sc-if value="{{ isTop }}" hint-placeholder-val="{{ false }}">
+<div class="blueprint" style="border-radius:0;padding:12px 14px 6px;background:var(--color-neutral-100)">
+<i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
+<span style="font-family:var(--font-heading);font-weight:600;font-size:15px;letter-spacing:.1em;text-transform:uppercase">Plan view — lateral deflection</span>
+<span style="font-family:ui-monospace,Menlo,monospace;font-size:10px;color:var(--color-neutral-600)">wind · spin drift · Coriolis</span>
+</div>
+<svg viewBox="0 0 1000 430" style="width:100%;height:auto;display:block;font-family:ui-monospace,Menlo,monospace">
+<sc-for list="{{ gx }}" as="g" hint-placeholder-count="6">
+<line x1="{{ g.x }}" y1="30" x2="{{ g.x }}" y2="368" stroke="rgba(29,31,32,.07)"></line>
+<text x="{{ g.x }}" y="386" font-size="10.5" fill="#7a7a7d" text-anchor="middle">{{ g.label }}</text>
+</sc-for>
+<sc-for list="{{ gyTop }}" as="g" hint-placeholder-count="5">
+<line x1="72" y1="{{ g.y }}" x2="978" y2="{{ g.y }}" stroke="rgba(29,31,32,.07)"></line>
+<text x="64" y="{{ g.y }}" font-size="10.5" fill="#7a7a7d" text-anchor="end" dominant-baseline="middle">{{ g.label }}</text>
+</sc-for>
+<line x1="72" y1="{{ axisY }}" x2="978" y2="{{ axisY }}" stroke="#1d1f20" stroke-dasharray="7 4"></line>
+<path d="{{ topWindOnly }}" fill="none" stroke="rgba(89,128,166,.4)" stroke-width="1.2" stroke-dasharray="4 3"></path>
+<path d="{{ topPath }}" fill="none" stroke="#5980a6" stroke-width="2"></path>
+<sc-for list="{{ windBands }}" as="b" hint-placeholder-count="0">
+<rect x="{{ b.x }}" y="30" width="{{ b.w }}" height="18" fill="rgba(89,128,166,.1)"></rect>
+<text x="{{ b.tx }}" y="43" font-size="10" fill="#416180" text-anchor="middle">{{ b.label }}</text>
+</sc-for>
+<sc-if value="{{ hasBullet }}" hint-placeholder-val="{{ false }}">
+<circle cx="{{ bx }}" cy="{{ byTop }}" r="5" fill="#5980a6" opacity=".25"></circle>
+<circle cx="{{ bx }}" cy="{{ byTop }}" r="2.6" fill="#1d1f20"></circle>
+</sc-if>
+<line x1="72" y1="368" x2="978" y2="368" stroke="rgba(29,31,32,.4)"></line>
+<line x1="72" y1="30" x2="72" y2="368" stroke="rgba(29,31,32,.4)"></line>
+<text x="525" y="416" font-size="10.5" fill="#7a7a7d" text-anchor="middle" letter-spacing="1.4">RANGE — {{ rangeUnit }} · dashed = wind alone, solid = wind + spin + Coriolis</text>
+</svg>
+</div>
+</sc-if>
+
+<sc-if value="{{ isScope }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start">
+<div class="blueprint" style="border-radius:0;padding:12px 14px;background:var(--color-neutral-100);flex:1 1 400px;min-width:0">
+<i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+<div style="font-family:var(--font-heading);font-weight:600;font-size:15px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px">Reticle — hold at {{ tgtLabel }}</div>
+<svg viewBox="0 0 520 520" style="width:100%;max-width:520px;height:auto;display:block;margin:0 auto;font-family:ui-monospace,Menlo,monospace">
+<circle cx="260" cy="260" r="252" fill="#e9e9ea" stroke="rgba(29,31,32,.45)" stroke-width="1.5"></circle>
+<circle cx="260" cy="260" r="240" fill="none" stroke="rgba(29,31,32,.12)"></circle>
+<rect x="{{ tgtX }}" y="{{ tgtY }}" width="{{ tgtW }}" height="{{ tgtH }}" fill="rgba(29,31,32,.14)" stroke="rgba(29,31,32,.4)"></rect>
+<line x1="20" y1="260" x2="500" y2="260" stroke="#1d1f20" stroke-width="1"></line>
+<line x1="260" y1="20" x2="260" y2="500" stroke="#1d1f20" stroke-width="1"></line>
+<sc-for list="{{ retDots }}" as="d" hint-placeholder-count="0">
+<circle cx="{{ d.x }}" cy="{{ d.y }}" r="{{ d.r }}" fill="#1d1f20"></circle>
+</sc-for>
+<sc-for list="{{ retLabels }}" as="d" hint-placeholder-count="0">
+<text x="{{ d.x }}" y="{{ d.y }}" font-size="9.5" fill="#5d5d60" text-anchor="{{ d.anchor }}">{{ d.label }}</text>
+</sc-for>
+<line x1="{{ holdX }}" y1="{{ holdY0 }}" x2="{{ holdX }}" y2="{{ holdY1 }}" stroke="#5980a6" stroke-width="1" stroke-dasharray="3 3"></line>
+<line x1="{{ holdX0 }}" y1="{{ holdY }}" x2="{{ holdX1 }}" y2="{{ holdY }}" stroke="#5980a6" stroke-width="1" stroke-dasharray="3 3"></line>
+<circle cx="{{ holdX }}" cy="{{ holdY }}" r="9" fill="none" stroke="#5980a6" stroke-width="1.5"></circle>
+<circle cx="{{ holdX }}" cy="{{ holdY }}" r="2.6" fill="#5980a6"></circle>
+<text x="{{ holdTx }}" y="{{ holdTy }}" font-size="10.5" fill="#416180" text-anchor="{{ holdAnchor }}">HOLD {{ holdLabel }}</text>
+</svg>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px;flex:0 1 250px;min-width:230px">
+<div class="blueprint" style="border-radius:0;padding:11px 12px;background:var(--color-neutral-100)">
+<i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+<div style="font-family:ui-monospace,Menlo,monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--color-neutral-600);margin-bottom:7px">Dial instead of hold</div>
+<div style="display:flex;justify-content:space-between;align-items:baseline;padding:4px 0;border-bottom:1px solid rgba(29,31,32,.08)">
+<span style="font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--color-neutral-700)">Elevation up</span>
+<span style="font-family:ui-monospace,Menlo,monospace;font-size:14px;color:var(--color-text)">{{ elevDial }}</span>
+</div>
+<div style="display:flex;justify-content:space-between;align-items:baseline;padding:4px 0">
+<span style="font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--color-neutral-700)">Windage {{ windDir }}</span>
+<span style="font-family:ui-monospace,Menlo,monospace;font-size:14px;color:var(--color-text)">{{ windDial }}</span>
+</div>
+</div>
+<div style="border:1px solid var(--color-divider);padding:11px 12px">
+<div style="font-family:ui-monospace,Menlo,monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--color-neutral-600);margin-bottom:6px">Target subtension</div>
+<p style="margin:0;font-size:12.5px;line-height:1.5;color:#424244">A {{ tgtSizeLabel }} plate at {{ tgtLabel }} subtends {{ subLabel }}. Reticle grid is {{ divLabel }} per division; the marker is where the crosshair goes.</p>
+</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isCurves }}" hint-placeholder-val="{{ false }}">
+<div class="blueprint" style="border-radius:0;padding:12px 14px 6px;background:var(--color-neutral-100)">
+<i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
+<span style="font-family:var(--font-heading);font-weight:600;font-size:15px;letter-spacing:.1em;text-transform:uppercase">Velocity &amp; energy decay</span>
+<span style="font-family:ui-monospace,Menlo,monospace;font-size:10px;color:var(--color-neutral-600)">solid = velocity · steel fill = energy</span>
+</div>
+<svg viewBox="0 0 1000 430" style="width:100%;height:auto;display:block;font-family:ui-monospace,Menlo,monospace">
+<sc-for list="{{ gx }}" as="g" hint-placeholder-count="6">
+<line x1="{{ g.x }}" y1="30" x2="{{ g.x }}" y2="368" stroke="rgba(29,31,32,.07)"></line>
+<text x="{{ g.x }}" y="386" font-size="10.5" fill="#7a7a7d" text-anchor="middle">{{ g.label }}</text>
+</sc-for>
+<sc-for list="{{ gyVel }}" as="g" hint-placeholder-count="5">
+<line x1="72" y1="{{ g.y }}" x2="978" y2="{{ g.y }}" stroke="rgba(29,31,32,.07)"></line>
+<text x="64" y="{{ g.y }}" font-size="10.5" fill="#7a7a7d" text-anchor="end" dominant-baseline="middle">{{ g.label }}</text>
+</sc-for>
+<sc-for list="{{ gyEne }}" as="g" hint-placeholder-count="5">
+<text x="986" y="{{ g.y }}" font-size="10.5" fill="#416180" text-anchor="start" dominant-baseline="middle">{{ g.label }}</text>
+</sc-for>
+<path d="{{ enePath }}" fill="rgba(89,128,166,.16)" stroke="none"></path>
+<path d="{{ velPath }}" fill="none" stroke="#1d1f20" stroke-width="2"></path>
+<sc-for list="{{ machMarks }}" as="m" hint-placeholder-count="0">
+<line x1="{{ m.x }}" y1="30" x2="{{ m.x }}" y2="368" stroke="#5980a6" stroke-width="1" stroke-dasharray="5 3"></line>
+<text x="{{ m.tx }}" y="{{ m.ty }}" font-size="10" fill="#416180" text-anchor="{{ m.anchor }}">{{ m.label }}</text>
+</sc-for>
+<sc-if value="{{ hasBullet }}" hint-placeholder-val="{{ false }}">
+<circle cx="{{ bx }}" cy="{{ byVel }}" r="2.8" fill="#1d1f20"></circle>
+</sc-if>
+<line x1="72" y1="368" x2="978" y2="368" stroke="rgba(29,31,32,.4)"></line>
+<line x1="72" y1="30" x2="72" y2="368" stroke="rgba(29,31,32,.4)"></line>
+<text x="525" y="416" font-size="10.5" fill="#7a7a7d" text-anchor="middle" letter-spacing="1.4">RANGE — {{ rangeUnit }} · left axis {{ velUnit }} · right axis {{ eneUnit }}</text>
+</svg>
+</div>
+</sc-if>
+
+<sc-if value="{{ isDope }}" hint-placeholder-val="{{ false }}">
+<div class="blueprint" style="border-radius:0;padding:12px 14px;background:var(--color-neutral-100)">
+<i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px">
+<span style="font-family:var(--font-heading);font-weight:600;font-size:15px;letter-spacing:.1em;text-transform:uppercase">Range card</span>
+<span style="font-family:ui-monospace,Menlo,monospace;font-size:10px;color:var(--color-neutral-600)">{{ dopeHead }}</span>
+</div>
+<table class="table" style="font-family:ui-monospace,Menlo,monospace;font-size:12.5px">
+<thead><tr>
+<th>Range</th><th>Drop</th><th>Elev</th><th>Wind</th><th>Spin</th><th>Vel</th><th>Mach</th><th>Energy</th><th>TOF</th>
+</tr></thead>
+<tbody>
+<sc-for list="{{ dope }}" as="r" hint-placeholder-count="10">
+<tr style="background:{{ r.bg }}">
+<td style="color:var(--color-text)">{{ r.range }}</td>
+<td>{{ r.drop }}</td>
+<td style="color:var(--color-accent-700)">{{ r.elev }}</td>
+<td style="color:var(--color-accent-700)">{{ r.wind }}</td>
+<td>{{ r.spin }}</td>
+<td>{{ r.vel }}</td>
+<td>{{ r.mach }}</td>
+<td>{{ r.energy }}</td>
+<td>{{ r.tof }}</td>
+</tr>
+</sc-for>
+</tbody>
+</table>
+</div>
+</sc-if>
+
+</div>
+</main>
+
+<aside style="border-left:1px solid var(--color-divider);overflow-y:auto;padding:16px 16px 28px;background:var(--color-bg);position:relative;z-index:2">
+<div style="font-family:ui-monospace,Menlo,monospace;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--color-accent);margin-bottom:10px">Firing solution</div>
+
+<div class="blueprint" style="border-radius:0;padding:12px 13px;background:var(--color-accent-900);margin-bottom:16px">
+<i class="corner tl" style="color:rgba(242,242,243,.5)"></i><i class="corner tr" style="color:rgba(242,242,243,.5)"></i><i class="corner bl" style="color:rgba(242,242,243,.5)"></i><i class="corner br" style="color:rgba(242,242,243,.5)"></i>
+<div style="font-family:ui-monospace,Menlo,monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:rgba(242,242,243,.55)">elevation · {{ angUnit }}</div>
+<div style="font-family:var(--font-heading);font-weight:700;font-size:44px;line-height:1;color:var(--color-bg);margin:2px 0 10px">{{ elevBig }}</div>
+<div style="font-family:ui-monospace,Menlo,monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:rgba(242,242,243,.55)">windage · {{ angUnit }} {{ windDir }}</div>
+<div style="font-family:var(--font-heading);font-weight:700;font-size:44px;line-height:1;color:var(--color-bg);margin:2px 0 0">{{ windBig }}</div>
+</div>
+
+<sc-for list="{{ readouts }}" as="r" hint-placeholder-count="8">
+<div style="display:flex;justify-content:space-between;align-items:baseline;padding:6px 0;border-bottom:1px solid rgba(29,31,32,.08)">
+<span style="font-size:11.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--color-neutral-700)">{{ r.label }}</span>
+<span style="font-family:ui-monospace,Menlo,monospace;font-size:13px;color:var(--color-text)">{{ r.value }}</span>
+</div>
+</sc-for>
+
+<button class="btn btn-secondary btn-block" onClick="{{ toggleMath }}" style="border-radius:0;font-family:var(--font-heading);font-weight:600;font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;margin-top:16px">{{ mathBtn }}</button>
+
+<sc-if value="{{ showMath }}" hint-placeholder-val="{{ false }}">
+<div style="margin-top:12px;display:flex;flex-direction:column;gap:11px">
+<sc-for list="{{ maths }}" as="m" hint-placeholder-count="5">
+<div style="border:1px solid var(--color-divider);padding:9px 10px">
+<div style="font-family:ui-monospace,Menlo,monospace;font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--color-accent);margin-bottom:5px">{{ m.title }}</div>
+<div style="font-family:ui-monospace,Menlo,monospace;font-size:12px;line-height:1.6;color:var(--color-text);white-space:pre-wrap">{{ m.eq }}</div>
+<div style="font-family:ui-monospace,Menlo,monospace;font-size:11.5px;line-height:1.5;color:var(--color-accent-700);margin-top:5px;white-space:pre-wrap">{{ m.sub }}</div>
+<p style="margin:6px 0 0;font-size:11.5px;line-height:1.5;color:var(--color-neutral-700)">{{ m.note }}</p>
+</div>
+</sc-for>
+</div>
+</sc-if>
+</aside>
+
+</div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:900},&quot;cartridge&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;.308 Win — 175gr Sierra MK&quot;,&quot;6.5 Creedmoor — 140gr ELD-M&quot;,&quot;6mm Dasher — 105gr Hybrid&quot;,&quot;.300 Win Mag — 215gr Hybrid&quot;,&quot;.338 Lapua — 300gr Sierra MK&quot;,&quot;.223 Rem — 77gr Sierra MK&quot;,&quot;.50 BMG — 750gr A-MAX&quot;],&quot;default&quot;:&quot;.308 Win — 175gr Sierra MK&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Defaults&quot;},&quot;units&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Imperial — yd / MOA&quot;,&quot;Metric — m / mil&quot;],&quot;default&quot;:&quot;Imperial — yd / MOA&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Defaults&quot;},&quot;startView&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Side view&quot;,&quot;Plan view&quot;,&quot;Reticle&quot;,&quot;Velocity&quot;,&quot;Range card&quot;],&quot;default&quot;:&quot;Side view&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Defaults&quot;},&quot;advancedEffects&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Physics&quot;},&quot;showMath&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Physics&quot;}}">
+const G1=[0,.2629,.05,.2558,.1,.2487,.15,.2413,.2,.2344,.25,.2278,.3,.2214,.35,.2155,.4,.2104,.45,.2061,.5,.2032,.55,.202,.6,.2034,.7,.2165,.725,.223,.75,.2313,.775,.2417,.8,.2546,.825,.2706,.85,.2901,.875,.3136,.9,.3415,.925,.3734,.95,.4084,.975,.4448,1,.4805,1.025,.5136,1.05,.5427,1.075,.5677,1.1,.5883,1.15,.6191,1.2,.6393,1.3,.6518,1.4,.6474,1.5,.6357,1.6,.6196,1.8,.5852,2,.5533,2.2,.5252,2.5,.489,3,.4389,3.5,.4032,4,.3775,4.5,.3611,5,.3498];
+const G7=[0,.1198,.05,.1197,.1,.1196,.15,.1194,.2,.1193,.25,.1194,.3,.1194,.35,.1194,.4,.1193,.45,.1193,.5,.1194,.55,.1193,.6,.1194,.65,.1197,.7,.1202,.725,.1207,.75,.1215,.775,.1226,.8,.1242,.825,.1266,.85,.1306,.875,.1368,.9,.1464,.925,.166,.95,.2054,.975,.2993,1,.3803,1.025,.4015,1.05,.4043,1.075,.4034,1.1,.4014,1.15,.3955,1.2,.3884,1.3,.3733,1.4,.3584,1.5,.3435,1.6,.3292,1.8,.3026,2,.2799,2.2,.2597,2.5,.2329,3,.1988,3.5,.1752,4,.1584,4.5,.1459,5,.1367];
+
+const CARTS=[
+ {name:".308 Win — 175gr Sierra MK",cal:.308,len:1.24,gr:175,bc7:.243,bc1:.496,mv:2600,tw:11},
+ {name:"6.5 Creedmoor — 140gr ELD-M",cal:.264,len:1.35,gr:140,bc7:.315,bc1:.625,mv:2710,tw:8},
+ {name:"6mm Dasher — 105gr Hybrid",cal:.243,len:1.28,gr:105,bc7:.278,bc1:.546,mv:2950,tw:8},
+ {name:".300 Win Mag — 215gr Hybrid",cal:.308,len:1.55,gr:215,bc7:.354,bc1:.691,mv:2825,tw:10},
+ {name:".338 Lapua — 300gr Sierra MK",cal:.338,len:1.7,gr:300,bc7:.381,bc1:.768,mv:2750,tw:9.4},
+ {name:".223 Rem — 77gr Sierra MK",cal:.224,len:.99,gr:77,bc7:.191,bc1:.372,mv:2750,tw:8},
+ {name:".50 BMG — 750gr A-MAX",cal:.51,len:2.36,gr:750,bc7:.526,bc1:1.05,mv:2820,tw:15}
+];
+
+const OMEGA=7.292115e-5, KSTD=5.5855e-4, GRAV=9.80665;
+const cdOf=(m,T)=>{ if(m<=T[0])return T[1]; const n=T.length/2; if(m>=T[2*n-2])return T[2*n-1];
+ let lo=0,hi=n-1; while(hi-lo>1){const mid=(lo+hi)>>1; if(T[2*mid]<=m)lo=mid; else hi=mid;}
+ const x0=T[2*lo],y0=T[2*lo+1],x1=T[2*hi],y1=T[2*hi+1]; return y0+(y1-y0)*(m-x0)/(x1-x0); };
+const fx=(v,d)=>{ const s=v.toFixed(d); return (s==="-"+(0).toFixed(d))?(0).toFixed(d):s; };
+
+class Component extends DCLogic {
+  _c0=Math.max(0,CARTS.findIndex(c=>c.name===(this.props.cartridge||CARTS[0].name)));
+  state={
+    cart:this._c0, bc:CARTS[this._c0].bc7, mv:CARTS[this._c0].mv, sdMv:12, gr:CARTS[this._c0].gr, tw:CARTS[this._c0].tw,
+    zero:100, sightH:2.2,
+    tempF:59, humid:50, baro:29.92, altFt:0,
+    zones:false, w:[{s:8,c:3},{s:12,c:2},{s:6,c:4.5}],
+    tgt:1000, incl:0, lat:39, azi:0, tgtSize:20,
+    model:"G7", units:(this.props.units==="Metric — m / mil"?"met":"imp"),
+    view:{"Side view":"side","Plan view":"top","Reticle":"scope","Velocity":"curves","Range card":"dope"}[this.props.startView]||"side",
+    showMath:!!this.props.showMath, anim:null
+  };
+  adv(){ return this.props.advancedEffects!==false; }
+  componentWillUnmount(){ if(this._raf) cancelAnimationFrame(this._raf); }
+
+  // ——— physics ———
+  atmos(){ const s=this.state, tC=(s.tempF-32)/1.8, tK=tC+273.15;
+    const psl=s.baro*3386.389, h=s.altFt*.3048;
+    const p=psl*Math.pow(Math.max(1-2.25577e-5*h,.05),5.25588);
+    const pv=(s.humid/100)*610.78*Math.pow(10,7.5*tC/(tC+237.3));
+    const rho=(p-pv)/(287.058*tK)+pv/(461.495*tK);
+    return {rho, c:331.3*Math.sqrt(1+tC/273.15), p, tK}; }
+
+  sg(){ const s=this.state, C=CARTS[s.cart], t=s.tw/C.cal, l=C.len/C.cal;
+    const base=30*s.gr/(t*t*Math.pow(C.cal,3)*l*(1+l*l));
+    return base*Math.pow(Math.max(s.mv,500)/2800,1/3); }
+
+  windAt(){ const s=this.state, z=s.zones?s.w:[s.w[0],s.w[0],s.w[0]];
+    const v=z.map(q=>{ const a=q.c/12*2*Math.PI, sp=q.s*.44704;
+      return {wx:-sp*Math.cos(a), wz:-sp*Math.sin(a)}; });
+    const tm=this.state.tgt*.9144;
+    return x=> x<tm/3? v[0] : x<2*tm/3? v[1] : v[2]; }
+
+  integrate(o){
+    const {theta,alpha,endX,env,bc,tab,wind,om,v0,sh}=o;
+    const gx=-GRAV*Math.sin(alpha), gy=-GRAV*Math.cos(alpha);
+    let S=[0,-sh,0,v0*Math.cos(theta),v0*Math.sin(theta),0], t=0;
+    const dt=o.dt||.002, out=o.sample?[]:null; let acc=0;
+    const f=(S)=>{ const w=wind(S[0]);
+      const rx=S[3]-w.wx, ry=S[4], rz=S[5]-w.wz;
+      const v=Math.sqrt(rx*rx+ry*ry+rz*rz), M=v/env.c;
+      const kd=KSTD*env.rho*cdOf(M,tab)*v/bc;
+      let ax=gx-kd*rx, ay=gy-kd*ry, az=-kd*rz;
+      if(om){ ax-=2*(om.y*S[5]-om.z*S[4]); ay-=2*(om.z*S[3]-om.x*S[5]); az-=2*(om.x*S[4]-om.y*S[3]); }
+      return [S[3],S[4],S[5],ax,ay,az]; };
+    const add=(A,B,h)=>A.map((a,i)=>a+B[i]*h);
+    let prev=S.slice(), prevT=0;
+    if(out) out.push({x:0,y:-sh,z:0,v:v0,t:0});
+    while(S[0]<endX && t<8){
+      const k1=f(S), k2=f(add(S,k1,dt/2)), k3=f(add(S,k2,dt/2)), k4=f(add(S,k3,dt));
+      prev=S.slice(); prevT=t;
+      S=S.map((s,i)=>s+dt/6*(k1[i]+2*k2[i]+2*k3[i]+k4[i])); t+=dt;
+      if(out){ acc+=dt; if(acc>=.008){ acc=0; out.push({x:S[0],y:S[1],z:S[2],v:Math.sqrt(S[3]*S[3]+S[4]*S[4]+S[5]*S[5]),t}); } }
+    }
+    const span=S[0]-prev[0], u=span>1e-9?(endX-prev[0])/span:0;
+    const E=prev.map((p,i)=>p+(S[i]-p)*u), tE=prevT+(t-prevT)*u;
+    if(out) out.push({x:E[0],y:E[1],z:E[2],v:Math.sqrt(E[3]*E[3]+E[4]*E[4]+E[5]*E[5]),t:tE});
+    return {yEnd:E[1], zEnd:E[2], vEnd:Math.sqrt(E[3]*E[3]+E[4]*E[4]+E[5]*E[5]), tEnd:tE, samples:out, reached:S[0]>=endX*.999};
+  }
+
+  solve(){
+    const s=this.state, sig=JSON.stringify([s.cart,s.bc,s.mv,s.gr,s.tw,s.zero,s.sightH,s.tempF,s.humid,s.baro,s.altFt,s.zones,s.w,s.tgt,s.incl,s.lat,s.azi,s.model,this.adv()]);
+    if(this._sig===sig) return this._sol;
+    const env=this.atmos(), tab=s.model==="G7"?G7:G1, bc=s.bc;
+    const v0=s.mv*.3048, sh=s.sightH*.0254, still=()=>({wx:0,wz:0});
+    const zm=Math.max(s.zero,10)*.9144, tm=Math.max(s.tgt,10)*.9144;
+    const alpha=s.incl*Math.PI/180;
+    let lo=-.004, hi=.06;
+    for(let i=0;i<28;i++){ const mid=(lo+hi)/2;
+      const r=this.integrate({theta:mid,alpha:0,endX:zm,env,bc,tab,wind:still,om:null,v0,sh,dt:.003});
+      if(r.yEnd<0) lo=mid; else hi=mid; }
+    const theta=(lo+hi)/2;
+    const L=s.lat*Math.PI/180, A=s.azi*Math.PI/180;
+    const om=this.adv()?{x:OMEGA*Math.cos(L)*Math.cos(A), y:OMEGA*Math.sin(L), z:-OMEGA*Math.cos(L)*Math.sin(A)}:null;
+    const r=this.integrate({theta:theta+alpha*0,alpha,endX:tm,env,bc,tab,wind:this.windAt(),om,v0,sh,dt:.002,sample:true});
+    const rNoWind=this.integrate({theta,alpha,endX:tm,env,bc,tab,wind:still,om:null,v0,sh,dt:.003,sample:true});
+    const SG=this.sg(), sgn=this.adv()?1:0;
+    const cwLeft=(()=>{ const z=s.zones?s.w:[s.w[0]]; let a=0; z.forEach(q=>{a+=-q.s*Math.sin(q.c/12*2*Math.PI);}); return a/z.length; })();
+    const ajMoa=this.adv()?.01*SG*cwLeft:0;
+    const mkg=s.gr*6.479891e-5;
+    const spinM=t=>sgn*1.25*(SG+1.2)*Math.pow(Math.max(t,0),1.83)*.0254;
+    const samples=r.samples.map(p=>{ const sd=spinM(p.t);
+      return {x:p.x, y:p.y, z:p.z+sd, zWind:p.z, spin:sd, v:p.v, t:p.t, mach:p.v/env.c, e:.5*mkg*p.v*p.v}; });
+    const sol={theta, env, samples, SG, ajMoa, mkg, tm, zm,
+      tof:r.tEnd, vEnd:r.vEnd, drop:r.yEnd, dropNoWind:rNoWind.yEnd,
+      drift:r.zEnd+spinM(r.tEnd), spinEnd:spinM(r.tEnd), coriolisZ:r.zEnd-this.integrate({theta,alpha,endX:tm,env,bc,tab,wind:this.windAt(),om:null,v0,sh,dt:.003}).zEnd,
+      eEnd:.5*mkg*r.vEnd*r.vEnd, reached:r.reached,
+      maxOrd:Math.max(...r.samples.map(p=>p.y))};
+    if(s.sdMv){ const hi=this.integrate({theta,alpha,endX:tm,env,bc,tab,wind:still,om:null,v0:v0+s.sdMv*.3048,sh,dt:.003});
+      sol.mvSpread=Math.abs(hi.yEnd-rNoWind.yEnd); } else sol.mvSpread=0;
+    this._sig=sig; this._sol=sol; return sol;
+  }
+
+  // ——— units ———
+  U(){ const met=this.state.units==="met";
+    return {met, rangeU:met?"m":"yd", dropU:met?"cm":"in", angU:met?"mil":"MOA",
+      velU:met?"m/s":"fps", eneU:met?"J":"ft·lb", tempU:met?"°C":"°F",
+      rng:m=>met?m:m/.9144, drp:m=>met?m*100:m/.0254,
+      ang:(offM,rM)=>{ const r=offM/Math.max(rM,1e-6); return met? r*1000 : r*(10800/Math.PI); },
+      vel:v=>met?v:v/.3048, ene:j=>met?j:j*.737562 }; }
+
+  set(k){ return e=>this.setState({[k]:parseFloat(e.target.value)}); }
+  ctl(k,label,min,max,step,fmt){ const v=this.state[k];
+    return {label, min, max, step, value:v, display:fmt(v), onInput:this.set(k)}; }
+
+  fire(){ const sol=this.solve(); if(this._raf) cancelAnimationFrame(this._raf);
+    const dur=Math.min(Math.max(sol.tof*1400,900),3600), t0=performance.now();
+    const step=()=>{ const p=Math.min((performance.now()-t0)/dur,1);
+      this.setState({anim:p}); if(p<1) this._raf=requestAnimationFrame(step);
+      else { this._raf=null; setTimeout(()=>this.setState({anim:null}),1100); } };
+    this._raf=requestAnimationFrame(step); }
+
+  renderVals(){
+    const s=this.state, u=this.U(), C=CARTS[s.cart], sol=this.solve(), sm=sol.samples;
+    const met=u.met, tm=sol.tm;
+    const X0=72,X1=978,Y0=40,Y1=356;
+    const sx=x=>X0+(X1-X0)*Math.min(x/tm,1);
+    const R=v=>v.toFixed(v<10?2:v<100?1:0);
+
+    // side view scaling (inches or cm)
+    const dropsD=sm.map(p=>u.drp(p.y));
+    let dTop=Math.max(...dropsD,0), dBot=Math.min(...dropsD);
+    const pad=(dTop-dBot)*.08+1; dTop+=pad; dBot-=pad;
+    const sy=d=>Y0+(Y1-Y0)*(dTop-d)/Math.max(dTop-dBot,1e-6);
+    const path=(pts)=>pts.map((p,i)=>(i?"L":"M")+p[0].toFixed(1)+" "+p[1].toFixed(1)).join(" ");
+    const dec=(arr)=>{ const n=arr.length, k=Math.max(1,Math.floor(n/380)); return arr.filter((_,i)=>i%k===0||i===n-1); };
+    const sideS=dec(sm);
+    const sidePath=path(sideS.map(p=>[sx(p.x),sy(u.drp(p.y))]));
+    const boreEnd=[sx(tm), sy(u.drp(-s.sightH*.0254+tm*Math.tan(sol.theta)))];
+    const borePath=path([[sx(0),sy(u.drp(-s.sightH*.0254))],boreEnd]);
+
+    // top view scaling
+    const driftD=sm.map(p=>u.drp(p.z));
+    let tMax=Math.max(...driftD,0), tMin=Math.min(...driftD,0);
+    const tp=(tMax-tMin)*.12+.5; tMax+=tp; tMin-=tp;
+    const ty=d=>Y0+(Y1-Y0)*(tMax-d)/Math.max(tMax-tMin,1e-6);
+    const topPath=path(sideS.map(p=>[sx(p.x),ty(u.drp(p.z))]));
+    const topWindOnly=path(sideS.map(p=>[sx(p.x),ty(u.drp(p.zWind))]));
+
+    // velocity / energy
+    const vD=sm.map(p=>u.vel(p.v)); const vMax=Math.max(...vD)*1.06, vMin=0;
+    const vy=v=>Y0+(Y1-Y0)*(vMax-v)/Math.max(vMax-vMin,1e-6);
+    const eD=sm.map(p=>u.ene(p.e)); const eMax=Math.max(...eD)*1.06;
+    const ey=e=>Y0+(Y1-Y0)*(eMax-e)/Math.max(eMax,1e-6);
+    const velPath=path(sideS.map(p=>[sx(p.x),vy(u.vel(p.v))]));
+    const enePath=path(sideS.map(p=>[sx(p.x),ey(u.ene(p.e))]))+" L"+sx(tm).toFixed(1)+" "+Y1+" L"+X0+" "+Y1+" Z";
+
+    // gridlines
+    const rTot=u.rng(tm); const stepR=(()=>{const raw=rTot/7;const p=Math.pow(10,Math.floor(Math.log10(raw)));const m=raw/p;return (m<1.5?1:m<3.5?2:m<7.5?5:10)*p;})();
+    const gx=[]; for(let r=0;r<=rTot+1e-6;r+=stepR) gx.push({x:sx(met?r:r*.9144).toFixed(1), label:Math.round(r)});
+    const mkY=(min,max,fn,fmt)=>{ const raw=(max-min)/5; const p=Math.pow(10,Math.floor(Math.log10(Math.abs(raw)||1))); const m=Math.abs(raw)/p; const st=(m<1.5?1:m<3.5?2:m<7.5?5:10)*p;
+      const out=[]; for(let v=Math.ceil(min/st)*st; v<=max; v+=st) out.push({y:fn(v).toFixed(1), label:fmt(v)}); return out; };
+    const gySide=mkY(dBot,dTop,sy,v=>fx(v,0));
+    const gyTop=mkY(tMin,tMax,ty,v=>fx(v,Math.abs(tMax-tMin)<8?1:0));
+    const gyVel=mkY(0,vMax,vy,v=>Math.round(v));
+    const gyEne=mkY(0,eMax,ey,v=>Math.round(v));
+
+    // marks
+    const at=r=>{ const xm=met?r:r*.9144; let best=sm[0]; for(const p of sm){ if(Math.abs(p.x-xm)<Math.abs(best.x-xm)) best=p; } return best; };
+    const maxOrdP=sm.reduce((a,b)=>b.y>a.y?b:a,sm[0]);
+    const sideMarks=[{x:sx(sol.zm).toFixed(1), y:sy(0).toFixed(1), ly:(sy(0)-9).toFixed(1), label:"ZERO "+Math.round(u.rng(sol.zm))},
+      {x:sx(maxOrdP.x).toFixed(1), y:sy(u.drp(maxOrdP.y)).toFixed(1), ly:(sy(u.drp(maxOrdP.y))-9).toFixed(1), label:"APEX "+fx(u.drp(maxOrdP.y),1)}];
+    const cross=(m)=>{ for(let i=1;i<sm.length;i++){ if(sm[i-1].mach>=m&&sm[i].mach<m) return sm[i]; } return null; };
+    const machMarks=[[1.2,"MACH 1.2"],[1,"MACH 1 — TRANSONIC"]].map(([m,l])=>{const p=cross(m); if(!p)return null;
+      const X=sx(p.x); return {x:X.toFixed(1), tx:(X-5).toFixed(1), ty:(m===1?58:44), anchor:"end", label:l+" @ "+Math.round(u.rng(p.x))+" "+u.rangeU};}).filter(Boolean);
+
+    // wind bands
+    const wb=[]; if(s.zones){ for(let i=0;i<3;i++){ const a=sx(tm*i/3), b=sx(tm*(i+1)/3);
+      wb.push({x:a.toFixed(1), w:(b-a).toFixed(1), tx:((a+b)/2).toFixed(1), label:s.w[i].s+(met?" m/s":" mph")+" @ "+this.clk(s.w[i].c)}); } }
+
+    // solution numbers
+    const elev=u.ang(-sol.drop, tm)-(met?sol.ajMoa/3.438:sol.ajMoa);
+    const wind=u.ang(sol.drift, tm);
+    // reticle: 4 divisions from centre must contain the hold
+    const need=Math.max(Math.abs(elev),Math.abs(wind))*1.15;
+    const DIV=[.25,.5,1,2,2.5,5,10,20].find(d=>d*4>=need)||50;
+    const PER=52, ppa=PER/DIV; // px per angular unit
+    const retDots=[],retLabels=[];
+    for(let i=-4;i<=4;i++){ if(!i)continue;
+      retDots.push({x:(260+i*PER).toFixed(1),y:260,r:2.4});
+      retDots.push({x:260,y:(260+i*PER).toFixed(1),r:2.4}); }
+    for(let i=-4;i<=4;i+=2){ if(!i)continue;
+      const lbl=fx(Math.abs(i*DIV),DIV<1?2:DIV<2?0:0);
+      retLabels.push({x:(260+i*PER).toFixed(1), y:280, anchor:"middle", label:lbl});
+      retLabels.push({x:248, y:(260+i*PER+3.5).toFixed(1), anchor:"end", label:lbl}); }
+    const holdX=Math.max(26,Math.min(494,260-wind*ppa)), holdY=Math.max(26,Math.min(494,260-elev*ppa));
+    const tgtAng=u.ang(s.tgtSize*.0254,tm);
+    const tgtPx=Math.max(5,Math.min(300,tgtAng*ppa));
+
+    const anim=s.anim, ai=anim==null?null:Math.min(sm.length-1,Math.round(anim*(sm.length-1)));
+    const bp=ai==null?null:sm[ai];
+
+    const dopeRows=[]; const stepD=met?100:100;
+    for(let r=stepD;r<=u.rng(tm)+1e-6;r+=stepD){ const p=at(r);
+      dopeRows.push({range:Math.round(r), drop:fx(u.drp(p.y),1), elev:fx(u.ang(-p.y,p.x),1),
+        wind:fx(u.ang(p.zWind,p.x),2), spin:fx(u.drp(p.spin),1), vel:Math.round(u.vel(p.v)),
+        mach:p.mach.toFixed(2), energy:Math.round(u.ene(p.e)), tof:p.t.toFixed(2),
+        bg:p.mach<1.1?"rgba(89,128,166,.09)":"transparent"}); }
+
+    const tabs=[["side","Side view"],["top","Plan view"],["scope","Reticle"],["curves","Velocity"],["dope","Range card"]]
+      .map(([k,l])=>({label:l, go:()=>this.setState({view:k}), bg:s.view===k?"#5980a6":"transparent", fg:s.view===k?"#f2f2f3":"#1d1f20"}));
+
+    const cw=(()=>{const z=s.zones?s.w:[s.w[0]];let a=0;z.forEach(q=>{a+=Math.abs(q.s*Math.sin(q.c/12*2*Math.PI));});return a/z.length;})();
+
+    return {
+      isG7:s.model==="G7", isG1:s.model==="G1", setG7:()=>this.setModel("G7"), setG1:()=>this.setModel("G1"),
+      isImp:!met, isMet:met, setImp:()=>this.setState({units:"imp"}), setMet:()=>this.setState({units:"met"}),
+      cartList:CARTS.map((c,i)=>({i, name:c.name, sel:i===s.cart})),
+      setCart:e=>{const i=parseInt(e.target.value,10); const c=CARTS[i];
+        this.setState({cart:i, bc:s.model==="G7"?c.bc7:c.bc1, mv:c.mv, gr:c.gr, tw:c.tw});},
+      calLabel:met?(C.cal*25.4).toFixed(2)+" mm":C.cal.toFixed(3)+" in",
+      lenLabel:"L/D "+(C.len/C.cal).toFixed(2),
+      sgLabel:"SG "+sol.SG.toFixed(2),
+
+      ctlProj:[
+        this.ctl("bc","Ballistic coeff · "+s.model,.1,1.2,.001,v=>v.toFixed(3)),
+        this.ctl("mv","Muzzle velocity",1200,4200,5,v=>Math.round(u.vel(v*.3048))+" "+u.velU),
+        this.ctl("sdMv","Velocity SD",0,40,1,v=>"± "+Math.round(u.vel(v*.3048))+" "+u.velU),
+        this.ctl("gr","Bullet weight",40,800,1,v=>met?(v*.06479891).toFixed(1)+" g":v+" gr"),
+        this.ctl("tw","Barrel twist",5,20,.1,v=>"1 : "+v.toFixed(1)+(met?" in":" in"))
+      ],
+      ctlRifle:[
+        this.ctl("zero","Zero range",25,400,5,v=>Math.round(u.rng(v*.9144))+" "+u.rangeU),
+        this.ctl("sightH","Sight height over bore",.5,4,.05,v=>fx(u.drp(v*.0254),1)+" "+u.dropU)
+      ],
+      ctlAtmo:[
+        this.ctl("tempF","Temperature",-20,120,1,v=>(met?fx((v-32)/1.8,0):Math.round(v))+" "+u.tempU),
+        this.ctl("baro","Barometric pressure",24,32,.01,v=>met?Math.round(v*33.8639)+" hPa":v.toFixed(2)+" inHg"),
+        this.ctl("humid","Relative humidity",0,100,1,v=>Math.round(v)+" %"),
+        this.ctl("altFt","Station altitude",0,12000,50,v=>met?Math.round(v*.3048)+" m":Math.round(v)+" ft")
+      ],
+      ctlShot:[
+        this.ctl("tgt","Target range",100,2500,10,v=>Math.round(u.rng(v*.9144))+" "+u.rangeU),
+        this.ctl("incl","Look angle",-45,45,1,v=>fx(v,0)+"°"),
+        this.ctl("tgtSize","Target plate",4,60,1,v=>met?Math.round(v*2.54)+" cm":Math.round(v)+" in"),
+        this.ctl("lat","Latitude",-70,70,1,v=>fx(Math.abs(v),0)+"° "+(v<0?"S":"N")),
+        this.ctl("azi","Azimuth of fire",0,359,1,v=>Math.round(v)+"° "+this.compass(v))
+      ],
+      rhoLabel:sol.env.rho.toFixed(4)+" kg/m³",
+      machLabel:Math.round(u.vel(sol.env.c))+" "+u.velU,
+
+      zones:s.zones, zoneBtn:s.zones?"single zone":"3 zones",
+      toggleZones:()=>this.setState({zones:!s.zones}),
+      windRows:(s.zones?[0,1,2]:[0]).map(i=>{ const q=s.w[i], a=q.c/12*2*Math.PI;
+        return {zone:s.zones?["0–1/3 range","1/3–2/3 range","2/3–target"][i]:"Uniform along path",
+          readout:(met?(q.s*.44704).toFixed(1)+" m/s":q.s.toFixed(1)+" mph")+" · "+this.clk(q.c),
+          speed:q.s, clock:q.c, clockLabel:this.clk(q.c),
+          ax:(22+15*Math.sin(a)).toFixed(1), ay:(22-15*Math.cos(a)).toFixed(1),
+          onSpeed:e=>{const w=s.w.map(x=>({...x})); w[i].s=parseFloat(e.target.value); this.setState({w});},
+          onClock:e=>{const w=s.w.map(x=>({...x})); w[i].c=parseFloat(e.target.value); this.setState({w});}};}),
+
+      tabs, isSide:s.view==="side", isTop:s.view==="top", isScope:s.view==="scope",
+      isCurves:s.view==="curves", isDope:s.view==="dope",
+      fire:()=>this.fire(),
+      flightLabel:sol.reached?("TOF "+sol.tof.toFixed(2)+" s · impact "+Math.round(u.vel(sol.vEnd))+" "+u.velU):"SUBSONIC STALL — REDUCE RANGE",
+
+      rangeUnit:u.rangeU, dropUnit:u.dropU, velUnit:u.velU, eneUnit:u.eneU, angUnit:u.angU,
+      gx, gySide, gyTop, gyVel, gyEne, sidePath, borePath, topPath, topWindOnly, velPath, enePath,
+      sideMarks, machMarks, windBands:wb,
+      losY:sy(0).toFixed(1), losYt:(sy(0)-6).toFixed(1), axisY:ty(0).toFixed(1),
+      hasBullet:!!bp, bx:bp?sx(bp.x).toFixed(1):0,
+      bySide:bp?sy(u.drp(bp.y)).toFixed(1):0, byTop:bp?ty(u.drp(bp.z)).toFixed(1):0,
+      byVel:bp?vy(u.vel(bp.v)).toFixed(1):0,
+
+      tgtLabel:Math.round(u.rng(tm))+" "+u.rangeU,
+      tgtSizeLabel:met?Math.round(s.tgtSize*2.54)+" cm":s.tgtSize+" in",
+      subLabel:tgtAng.toFixed(2)+" "+u.angU,
+      tgtX:(260-tgtPx/2).toFixed(1), tgtY:(260-tgtPx/2).toFixed(1), tgtW:tgtPx.toFixed(1), tgtH:tgtPx.toFixed(1),
+      retDots, retLabels,
+      holdX:holdX.toFixed(1), holdY:holdY.toFixed(1),
+      holdX0:(holdX-22).toFixed(1), holdX1:(holdX+22).toFixed(1),
+      holdY0:(holdY-22).toFixed(1), holdY1:(holdY+22).toFixed(1),
+      holdTx:(holdX+(holdX>260?-14:14)).toFixed(1), holdTy:(holdY-14).toFixed(1),
+      holdAnchor:holdX>260?"end":"start",
+      divLabel:fx(DIV,DIV<1?2:0)+" "+u.angU,
+      holdLabel:fx(Math.abs(elev),met?2:1)+(elev>=0?" UP / ":" DOWN / ")+fx(Math.abs(wind),met?2:1)+" "+(wind>0?"LEFT":"RIGHT"),
+      elevDial:fx(Math.abs(elev),met?2:1)+" "+u.angU, windDial:fx(Math.abs(wind),met?2:1)+" "+u.angU,
+      windDir:wind>=0?"LEFT":"RIGHT",
+      elevBig:(elev>=0?"U ":"D ")+fx(Math.abs(elev),met?2:1),
+      windBig:(wind>=0?"L ":"R ")+fx(Math.abs(wind),met?2:1),
+
+      readouts:[
+        {label:"Time of flight", value:sol.tof.toFixed(3)+" s"},
+        {label:"Bullet drop from LOS", value:fx(u.drp(sol.drop),1)+" "+u.dropU},
+        {label:"Max ordinate", value:fx(u.drp(sol.maxOrd),1)+" "+u.dropU},
+        {label:"Impact velocity", value:Math.round(u.vel(sol.vEnd))+" "+u.velU+"  M"+(sol.vEnd/sol.env.c).toFixed(2)},
+        {label:"Kinetic energy", value:Math.round(u.ene(sol.eEnd))+" "+u.eneU},
+        {label:"Wind deflection", value:fx(u.drp(sol.drift-sol.spinEnd-sol.coriolisZ),1)+" "+u.dropU},
+        {label:"Spin drift", value:fx(u.drp(sol.spinEnd),1)+" "+u.dropU},
+        {label:"Coriolis (horizontal)", value:fx(u.drp(sol.coriolisZ),2)+" "+u.dropU},
+        {label:"Aerodynamic jump", value:fx(met?sol.ajMoa/3.438:sol.ajMoa,2)+" "+u.angU},
+        {label:"Stability factor (Miller)", value:sol.SG.toFixed(2)+(sol.SG<1.4?"  MARGINAL":"")},
+        {label:"Vertical spread from MV SD", value:"± "+fx(u.drp(this.mvSpread(sol)),1)+" "+u.dropU},
+        {label:"Crosswind component", value:(met?(cw*.44704).toFixed(1)+" m/s":cw.toFixed(1)+" mph")}
+      ],
+      showMath:s.showMath, mathBtn:s.showMath?"hide the math":"show the math",
+      toggleMath:()=>this.setState({showMath:!s.showMath}),
+      maths:this.maths(sol,u),
+      dope:dopeRows, dopeHead:C.name+" · "+s.model+" "+s.bc.toFixed(3)+" · zero "+Math.round(u.rng(sol.zm))+" "+u.rangeU
+    };
+  }
+
+  setModel(m){ const C=CARTS[this.state.cart]; const cur=this.state.model;
+    if(m===cur) return;
+    const ratio=this.state.bc/(cur==="G7"?C.bc7:C.bc1);
+    this.setState({model:m, bc:parseFloat(((m==="G7"?C.bc7:C.bc1)*ratio).toFixed(3))}); }
+
+  mvSpread(sol){ return sol.mvSpread||0; }
+
+  clk(c){ const h=Math.floor(c)||12, m=(c%1)?":30":":00"; return h+m; }
+  compass(d){ const n=["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW"];
+    return n[Math.round(d/22.5)%16]; }
+
+  maths(sol,u){ const s=this.state, env=sol.env;
+    const M=sol.vEnd/env.c, tab=s.model==="G7"?G7:G1;
+    return [
+     {title:"Drag deceleration",
+      eq:"a = k · ρ · Cd(M) · v² / BC",
+      sub:"k = A/2m = 5.5855e-4   ρ = "+env.rho.toFixed(4)+"   Cd = "+cdOf(this.state.mv*.3048/env.c,tab).toFixed(4)+"   BC = "+s.bc.toFixed(3),
+      note:"Point-mass retardation against the "+s.model+" standard drag function. Cd is read from the "+s.model+" table by Mach number and scaled by the ballistic coefficient."},
+     {title:"Air density",
+      eq:"ρ = (P−Pv)/(Rd·T) + Pv/(Rv·T)",
+      sub:"T = "+env.tK.toFixed(1)+" K   P = "+(env.p/100).toFixed(1)+" hPa   RH = "+s.humid+" %\nP = P₀(1 − 2.25577e-5·h)^5.25588",
+      note:"Station pressure is derived from sea-level baro and altitude; humidity lowers density because water vapour is lighter than dry air."},
+     {title:"Speed of sound",
+      eq:"c = 331.3 · √(1 + T/273.15)",
+      sub:"c = "+Math.round(u.vel(env.c))+" "+u.velU+"   impact Mach = "+M.toFixed(3),
+      note:"Every Cd lookup depends on this. Cold, dense air lowers c, pushing the bullet to a higher Mach and more drag."},
+     {title:"Gyroscopic stability (Miller)",
+      eq:"SG = 30m / (t²·d³·l·(1+l²))",
+      sub:"m = "+s.gr+" gr   t = "+(s.tw/CARTS[s.cart].cal).toFixed(1)+" cal/turn   l = "+(CARTS[s.cart].len/CARTS[s.cart].cal).toFixed(2)+" cal\nSG = "+sol.SG.toFixed(3)+"  (velocity-corrected)",
+      note:"SG drives both spin drift and aerodynamic jump. Below about 1.4 the bullet is marginally stable and BC degrades."},
+     {title:"Spin drift (Litz approximation)",
+      eq:"d = 1.25 · (SG + 1.2) · TOF^1.83",
+      sub:"TOF = "+sol.tof.toFixed(3)+" s  →  "+fx(u.drp(sol.spinEnd),2)+" "+u.dropU,
+      note:"An empirical fit, in inches, for right-hand twist. It is a function of time of flight, not range, so it grows fast at long distance."},
+     {title:"Coriolis acceleration",
+      eq:"a = −2 Ω × v",
+      sub:"Ω = 7.2921e-5 rad/s   φ = "+s.lat+"°   Az = "+s.azi+"°\nΩ = ("+(7.292115e-5*Math.cos(s.lat*Math.PI/180)*Math.cos(s.azi*Math.PI/180)).toExponential(2)+", "+(7.292115e-5*Math.sin(s.lat*Math.PI/180)).toExponential(2)+", "+(-7.292115e-5*Math.cos(s.lat*Math.PI/180)*Math.sin(s.azi*Math.PI/180)).toExponential(2)+")",
+      note:"Integrated inside the solver rather than added afterwards. The horizontal component depends on latitude only; the vertical (Eötvös) component depends on the azimuth of fire."},
+     {title:"Aerodynamic jump",
+      eq:"AJ ≈ 0.01 · SG · w⊥",
+      sub:"w⊥ (from left) = "+((s.zones?s.w:[s.w[0]]).reduce((a,q)=>a-q.s*Math.sin(q.c/12*2*Math.PI),0)/(s.zones?3:1)).toFixed(1)+" mph  →  "+fx(u.met?sol.ajMoa/3.438:sol.ajMoa,3)+" "+u.angU,
+      note:"A crosswind tilts the bullet's yaw axis at launch, throwing the group vertically. Wind from the left lifts a right-twist bullet."},
+     {title:"Angular hold",
+      eq:"θ = arctan(offset / range)",
+      sub:"1 mil = 3.600 in @ 100 yd   1 MOA = 1.047 in @ 100 yd",
+      note:"Drop and drift are solved in linear units, then divided by slant range to give the dial. This is why the same drop is a different hold at every distance."},
+     {title:"Kinetic energy",
+      eq:"E = ½ m v²",
+      sub:"m = "+(sol.mkg*1000).toFixed(2)+" g   v = "+Math.round(u.vel(sol.vEnd))+" "+u.velU+"  →  "+Math.round(u.ene(sol.eEnd))+" "+u.eneU,
+      note:"Energy falls with the square of velocity, so it decays much faster than velocity itself."},
+     {title:"Integration",
+      eq:"Runge–Kutta 4, Δt = 2 ms",
+      sub:"zero solved by bisection on launch angle (28 iterations)\nlook angle "+s.incl+"° rotates gravity into the sight-line frame",
+      note:"The trajectory is integrated in a frame aligned with the line of sight, so range is slant range and drop is measured perpendicular to the sight line."}
+    ]; }
+}
+
+</script>
+</body>
+</html>
