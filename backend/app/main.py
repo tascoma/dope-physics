@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
 from app.core.logging import configure_logging
+from app.routes.ballistics import router as ballistics_router
 
 logger = logging.getLogger(__name__)
 
@@ -37,9 +38,7 @@ async def health() -> dict[str, str]:
     return {"status": "ok"}
 
 
-# Mount routers here as they are created, e.g.:
-# from app.routes import items
-# app.include_router(items.router, prefix="/api/items", tags=["items"])
+app.include_router(ballistics_router, prefix="/api")
 
 
 if __name__ == "__main__":

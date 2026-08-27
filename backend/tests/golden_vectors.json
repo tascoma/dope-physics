@@ -1,0 +1,252 @@
+{
+  "note": "Reference outputs from the HTML prototype's solver. Both the Python and TypeScript ports must reproduce every field to the stated tolerance.",
+  "tolerances": {
+    "dropIn": 0.05,
+    "elevMOA": 0.01,
+    "windMOA": 0.01,
+    "tofS": 0.0005,
+    "vImpactFps": 0.5,
+    "energyFtLb": 2,
+    "sg": 0.001
+  },
+  "cases": [
+    {
+      "id": "A_308_1000yd_8mph_3oclock",
+      "input": {
+        "cal": 0.308,
+        "len": 1.24,
+        "gr": 175,
+        "bc": 0.243,
+        "mv": 2600,
+        "tw": 11,
+        "model": "G7",
+        "zero": 100,
+        "sightH": 2.2,
+        "tempF": 59,
+        "humid": 50,
+        "baro": 29.92,
+        "altFt": 0,
+        "zones": [
+          {
+            "s": 8,
+            "c": 3
+          }
+        ],
+        "tgt": 1000,
+        "incl": 0,
+        "lat": 39,
+        "azi": 0
+      },
+      "expected": {
+        "launchAngleRad": 0.001357,
+        "tofS": 1.747974,
+        "dropIn": -406.533569,
+        "driftIn": -70.09252,
+        "windOnlyIn": -83.6531,
+        "spinIn": 11.058207,
+        "coriolisIn": 2.502373,
+        "elevMOA": 38.979794,
+        "windMOA": -6.693343,
+        "vImpactFps": 1119.140963,
+        "machImpact": 1.002466,
+        "energyFtLb": 486.601896,
+        "sg": 1.983727,
+        "ajMOA": -0.158698,
+        "rhoKgM3": 1.221031,
+        "machMs": 340.275081
+      }
+    },
+    {
+      "id": "B_308_1000yd_no_wind_no_coriolis",
+      "input": {
+        "cal": 0.308,
+        "len": 1.24,
+        "gr": 175,
+        "bc": 0.243,
+        "mv": 2600,
+        "tw": 11,
+        "model": "G7",
+        "zero": 100,
+        "sightH": 2.2,
+        "tempF": 59,
+        "humid": 50,
+        "baro": 29.92,
+        "altFt": 0,
+        "zones": [
+          {
+            "s": 0,
+            "c": 12
+          }
+        ],
+        "tgt": 1000,
+        "incl": 0,
+        "lat": 0,
+        "azi": 0
+      },
+      "expected": {
+        "launchAngleRad": 0.001357,
+        "tofS": 1.747971,
+        "dropIn": -406.527968,
+        "driftIn": 11.086215,
+        "windOnlyIn": 0,
+        "spinIn": 11.058176,
+        "coriolisIn": 0.02804,
+        "elevMOA": 38.820561,
+        "windMOA": 1.058656,
+        "vImpactFps": 1119.126795,
+        "machImpact": 1.002453,
+        "energyFtLb": 486.589575,
+        "sg": 1.983727,
+        "ajMOA": 0,
+        "rhoKgM3": 1.221031,
+        "machMs": 340.275081
+      }
+    },
+    {
+      "id": "C_65CM_140_1200yd",
+      "input": {
+        "cal": 0.264,
+        "len": 1.35,
+        "gr": 140,
+        "bc": 0.315,
+        "mv": 2710,
+        "tw": 8,
+        "model": "G7",
+        "zero": 100,
+        "sightH": 2.2,
+        "tempF": 59,
+        "humid": 50,
+        "baro": 29.92,
+        "altFt": 0,
+        "zones": [
+          {
+            "s": 8,
+            "c": 3
+          }
+        ],
+        "tgt": 1200,
+        "incl": 0,
+        "lat": 39,
+        "azi": 0
+      },
+      "expected": {
+        "launchAngleRad": 0.00129,
+        "tofS": 1.907918,
+        "dropIn": -503.231012,
+        "driftIn": -66.135268,
+        "windOnlyIn": -81.594067,
+        "spinIn": 12.113066,
+        "coriolisIn": 3.345733,
+        "elevMOA": 40.187541,
+        "windMOA": -5.262877,
+        "vImpactFps": 1292.572069,
+        "machImpact": 1.157816,
+        "energyFtLb": 519.282555,
+        "sg": 1.771119,
+        "ajMOA": -0.14169,
+        "rhoKgM3": 1.221031,
+        "machMs": 340.275081
+      }
+    },
+    {
+      "id": "D_308_600yd_uphill20_alt6000",
+      "input": {
+        "cal": 0.308,
+        "len": 1.24,
+        "gr": 175,
+        "bc": 0.243,
+        "mv": 2600,
+        "tw": 11,
+        "model": "G7",
+        "zero": 100,
+        "sightH": 2.2,
+        "tempF": 40,
+        "humid": 50,
+        "baro": 29.92,
+        "altFt": 6000,
+        "zones": [
+          {
+            "s": 12,
+            "c": 9
+          }
+        ],
+        "tgt": 600,
+        "incl": 20,
+        "lat": 39,
+        "azi": 0
+      },
+      "expected": {
+        "launchAngleRad": 0.001351,
+        "tofS": 0.828213,
+        "dropIn": -83.695445,
+        "driftIn": 32.022988,
+        "windOnlyIn": 28.43019,
+        "spinIn": 2.818678,
+        "coriolisIn": 0.77412,
+        "elevMOA": 13.082497,
+        "windMOA": 5.096617,
+        "vImpactFps": 1805.687999,
+        "machImpact": 1.647902,
+        "energyFtLb": 1266.746273,
+        "sg": 1.983727,
+        "ajMOA": 0.238047,
+        "rhoKgM3": 1.016966,
+        "machMs": 333.984428
+      }
+    },
+    {
+      "id": "E_50BMG_2000yd_3zone",
+      "input": {
+        "cal": 0.51,
+        "len": 2.36,
+        "gr": 750,
+        "bc": 0.526,
+        "mv": 2820,
+        "tw": 15,
+        "model": "G7",
+        "zero": 100,
+        "sightH": 2.2,
+        "tempF": 59,
+        "humid": 50,
+        "baro": 29.92,
+        "altFt": 0,
+        "zones": [
+          {
+            "s": 8,
+            "c": 3
+          },
+          {
+            "s": 12,
+            "c": 2
+          },
+          {
+            "s": 6,
+            "c": 4.5
+          }
+        ],
+        "tgt": 2000,
+        "incl": 0,
+        "lat": 45,
+        "azi": 90
+      },
+      "expected": {
+        "launchAngleRad": 0.001229,
+        "tofS": 3.013348,
+        "dropIn": -1303.999836,
+        "driftIn": -88.994659,
+        "windOnlyIn": -127.978462,
+        "spinIn": 29.122779,
+        "coriolisIn": 9.861025,
+        "elevMOA": 62.404384,
+        "windMOA": -4.249182,
+        "vImpactFps": 1383.820925,
+        "machImpact": 1.239552,
+        "energyFtLb": 3188.505819,
+        "sg": 1.895014,
+        "ajMOA": -0.142978,
+        "rhoKgM3": 1.221031,
+        "machMs": 340.275081
+      }
+    }
+  ]
+}
