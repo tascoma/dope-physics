@@ -1,5 +1,11 @@
+/* @import rules must precede all other rules. The Industry design system is
+   light-only — no dark variant is defined. */
+@import "./styles/industry.css";
+@import "./styles/cockpit.css";
+@import "./styles/landing.css";
+
 :root {
-  color-scheme: light dark;
+  color-scheme: light;
 }
 
 body {
